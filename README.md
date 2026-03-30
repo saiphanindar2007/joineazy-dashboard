@@ -1,141 +1,272 @@
-# Joineazy — Assignment & Review Dashboard
+# 🚀 Joineazy — Assignment & Review Dashboard
 
-A clean, responsive, role-based assignment management system built for Joineazy's Frontend Intern Task.
+A modern, responsive **role-based assignment management system** built as part of the Joineazy Frontend Intern Task.
+Designed with a focus on **clean UX, scalability, and real-world usability**.
 
-## 🚀 Quick Setup
+---
 
-### Prerequisites
-- Node.js v18+ installed ([download here](https://nodejs.org))
-- Terminal / Command Prompt
+## 🎯 Project Objective
 
-### Step 1 — Create the project folder and install
+To build a **student-assignment dashboard** with:
 
-```bash
-# Create and enter project directory
-mkdir joineazy-dashboard && cd joineazy-dashboard
+* Role-based access (Student / Admin)
+* Assignment tracking & submission system
+* Visual progress indicators
+* Clean and responsive UI
 
-# Copy all provided files into this folder (see folder structure below)
-# Then run:
-npm install
-```
+---
 
-### Step 2 — Run Development Server
+## ⚡ Live Features
 
-```bash
-npm run dev
-```
+### 👨‍🎓 Student Dashboard
 
-Open **http://localhost:5173** in your browser. Done! 🎉
+* View all assigned tasks with details
+* Access Google Drive submission links
+* Submit assignments via **2-step verification flow**
+* Track progress with **circular progress indicator**
+* Status indicators:
 
-### Step 3 — Build for Production
+  * ✅ Submitted
+  * ⏳ Pending
+  * ⚠️ Overdue
+* Filter assignments (All / Pending / Submitted)
 
-```bash
-npm run build
-npm run preview   # Preview the production build locally
+---
+
+### 👨‍🏫 Admin Dashboard
+
+* Create new assignments with validation
+* Monitor submissions using **progress bars**
+* View per-student submission status
+* Delete assignments
+* Track:
+
+  * Total submissions
+  * Completion rate
+* Toggle between:
+
+  * My Assignments
+  * All Assignments
+
+---
+
+## 🧠 Core Logic & Implementation
+
+### 🔹 State Management
+
+* Centralized in `App.jsx`
+* Handles:
+
+  * `currentUser`
+  * `assignments`
+* Data persistence via **localStorage**
+
+---
+
+### 🔹 Data Flow
+
+* Initial data seeded from `mockData.js`
+* Stored in localStorage for persistence
+* Structure:
+
+```js
+{
+  id,
+  title,
+  description,
+  dueDate,
+  driveLink,
+  submissions: [studentId]
+}
 ```
 
 ---
 
-## 📁 Folder Structure
+### 🔹 Role-Based Rendering
 
+* Single-page architecture
+* Conditional rendering:
+
+```js
+currentUser.role === "student"
+  ? <StudentDashboard />
+  : <AdminDashboard />
 ```
-joineazy-dashboard/
-├── index.html               # Entry HTML with Google Fonts
-├── package.json             # Dependencies
-├── vite.config.js           # Vite config
-├── README.md
-└── src/
-    ├── main.jsx             # React root mount
-    ├── App.jsx              # Root component — state + routing
-    ├── App.css              # All global styles (no Tailwind)
-    ├── data/
-    │   └── mockData.js      # Mock students, admins, assignments
-    └── components/
-        ├── LoginPage.jsx        # Landing + role selection
-        ├── Navbar.jsx           # Shared sticky navbar
-        ├── StudentDashboard.jsx # Student view + assignment cards
-        ├── AdminDashboard.jsx   # Admin view + progress bars
-        ├── SubmitModal.jsx      # 2-step submission confirmation
-        ├── CreateAssignmentModal.jsx  # Admin create assignment form
-        └── Toast.jsx            # Toast notification system
-```
+
+---
+
+### 🔹 Submission Logic (Key Highlight)
+
+* Double confirmation flow:
+
+  1. Initial confirmation
+  2. Final verification
+* Prevents accidental submissions
+* Updates state + localStorage instantly
+
+---
+
+### 🔹 Progress Calculation
+
+* Student:
+
+  * Completed / Total assignments → circular progress
+* Admin:
+
+  * Submitted students / total students → progress bar
 
 ---
 
 ## 🏗 Architecture Overview
 
-### State Management
-- **App.jsx** owns all global state (`currentUser`, `assignments`)
-- Data persists across refreshes via **localStorage**
-- Props drilling used (no Context/Redux needed at this scale)
-
-### Routing
-- Single-page: App conditionally renders `<LoginPage>`, `<StudentDashboard>`, or `<AdminDashboard>` based on `currentUser`
-
-### Data Layer
-- No backend — `mockData.js` seeds initial data to `localStorage`
-- `assignments` array holds submission state: each assignment has a `submissions: [studentId]` array
-
-### Component Design Decisions
-| Component | Responsibility |
-|-----------|---------------|
-| `LoginPage` | Hero landing, role/user selection |
-| `Navbar` | Sticky nav with tab switching, user badge, logout |
-| `StudentDashboard` | Grid of assignment cards, stats, circular progress |
-| `AssignmentCard` (inside Student) | Individual card with submit button |
-| `AdminDashboard` | List of assignments with per-student progress bars |
-| `AdminAssignmentCard` (inside Admin) | Card + expandable student list |
-| `SubmitModal` | 2-step double-verification flow |
-| `CreateAssignmentModal` | Form with validation for new assignments |
-| `Toast` | Auto-dismissing notifications (3.5s) |
+```
+src/
+├── main.jsx
+├── App.jsx
+├── App.css
+├── data/
+│   └── mockData.js
+└── components/
+    ├── LoginPage.jsx
+    ├── Navbar.jsx
+    ├── StudentDashboard.jsx
+    ├── AdminDashboard.jsx
+    ├── SubmitModal.jsx
+    ├── CreateAssignmentModal.jsx
+    └── Toast.jsx
+```
 
 ---
 
-## ✨ Features
+## 🎨 UI & Design Philosophy
 
-### Student View
-- 📋 View all assignments with subject, description, due date
-- 🔗 Open Google Drive submission link per assignment
-- ✅ **Double-verification submission flow** (Step 1 → Step 2 confirmation)
-- 📊 Circular overall progress indicator
-- 🏷 Status badges: Submitted / Pending / Overdue
-- 🔍 Filter by All / Pending / Submitted (nav tabs)
+* Dark-themed **modern SaaS dashboard**
+* Color palette:
 
-### Admin (Professor) View
-- ➕ Create assignments (title, subject, due date, description, Drive link)
-- 📊 Per-assignment **progress bar** showing class submission rate
-- 👥 Expandable per-student status list (Submitted / Pending)
-- 🗑 Delete own assignments
-- 📈 Overall stats: completion rate, total submissions
-- 🔀 Toggle between "My Assignments" and "All Assignments"
+  * Deep navy / black
+  * Electric blue accents
+  * Mint highlights
+* Typography:
 
-### Design
-- 🌑 Dark luxury aesthetic — deep navy/black with electric blue + mint accents
-- 🔤 Fonts: **Syne** (display/headings) + **Jost** (body)
-- 💫 CSS animations — card entrances, blob backgrounds, loader, modals
-- 📱 Fully responsive — mobile, tablet, desktop
-- 🎨 Pure CSS (no Tailwind) with CSS custom properties
-- 🍞 Toast notification system
+  * **Syne** → headings
+  * **Jost** → body
+* Micro-interactions:
+
+  * Card hover animations
+  * Modal transitions
+  * Toast notifications
+
+---
+
+## 📱 Responsiveness
+
+* Fully responsive across:
+
+  * Mobile
+  * Tablet
+  * Desktop
+* Flexible layouts using CSS
 
 ---
 
 ## 🛠 Tech Stack
-- **React 18** — UI library
-- **Vite 5** — build tool & dev server
-- **Pure CSS** — custom properties, no CSS frameworks
-- **localStorage** — data persistence
-- **Google Fonts** — Syne + Jost
+
+* **React 18** — Component-based UI
+* **Vite 5** — Fast build tool
+* **Pure CSS** — No frameworks
+* **localStorage** — Data persistence
+* **Google Fonts** — Typography
 
 ---
 
-## 🌐 Deploy to Vercel/Netlify
+## ⚙️ Setup Instructions
 
-**Vercel:**
+### 1️⃣ Install Dependencies
+
 ```bash
-npm i -g vercel
-vercel
+npm install
 ```
 
-Build output: `dist/` folder
-Build command: `npm run build`
-Publish directory: `dist`
+### 2️⃣ Run Development Server
+
+```bash
+npm run dev
+```
+
+Visit:
+
+```
+http://localhost:5173
+```
+
+---
+
+### 3️⃣ Production Build
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 🌐 Deployment
+
+### Vercel / Netlify
+
+* Build Command:
+
+```
+npm run build
+```
+
+* Output Directory:
+
+```
+dist
+```
+
+---
+
+## 💡 Design Decisions
+
+* Avoided external state libraries → kept lightweight
+* Used localStorage → simulate backend behavior
+* Component-based structure → easy scalability
+* Focused on UX clarity → minimal confusion for users
+
+---
+
+## 🚀 Future Improvements
+
+* Backend integration (Node.js / Firebase)
+* Authentication system
+* Multi-user real-time tracking
+* Notifications & reminders
+* Analytics dashboard
+
+---
+
+## 🧪 Evaluation Highlights
+
+✔ Clean architecture
+✔ Role-based functionality
+✔ Real-world UX flows
+✔ Scalable structure
+✔ Responsive design
+
+---
+
+## 👨‍💻 Author
+
+Developed as part of Joineazy Frontend Task submission.
+
+---
+
+## 🎯 Final Note
+
+This project demonstrates:
+
+> Strong frontend fundamentals, clean UI design, and practical system thinking.
+
+---
