@@ -1,109 +1,97 @@
 import React, { useState } from 'react';
 
-export default function SubmitModal({ assignment, onConfirm, onClose }) {
-  const [step, setStep] = useState(1); // 1 = first confirm, 2 = final confirm
+function fmtTS(ts) {
+  if (!ts) return '';
+  return new Date(ts).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
 
-  const handleFirstConfirm = () => setStep(2);
-
-  const handleFinalConfirm = () => {
-    onConfirm();
-    onClose();
-  };
+export default function SubmitModal({ assignment, myGroup, currentUser, onConfirm, onClose }) {
+  const [step, setStep] = useState(1);
+  const isGroup = assignment.submissionType === 'group';
+  const memberCount = myGroup?.members?.length || 0;
 
   return (
-    <div className="modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+    <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="modal">
-        {/* Step 1 */}
         {step === 1 && (
           <>
             <div className="modal-head">
               <div>
                 <div className="modal-head-icon info">📤</div>
-                <h2>Confirm Your Submission</h2>
-                <p>Please verify before marking this as submitted.</p>
+                <h2>Confirm Submission</h2>
+                <p>Review before marking as submitted.</p>
               </div>
               <button className="modal-close" onClick={onClose}>✕</button>
             </div>
-
             <div className="modal-body">
-              {/* Steps indicator */}
               <div className="modal-steps">
-                <div className="step-dot active" />
-                <div className="step-dot" />
+                <div className="step-dot active" /><div className="step-dot" />
               </div>
-
               <div className="modal-info-box">
-                <h4>{assignment.title}</h4>
-                <p style={{ marginBottom: '10px' }}>{assignment.description}</p>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap' }}>
+                  <h4 style={{ flex: 1, margin: 0 }}>{assignment.title}</h4>
+                  <span className={`type-badge ${isGroup ? 'group' : 'individual'}`}>
+                    {isGroup ? '👥 Group' : '👤 Individual'}
+                  </span>
+                </div>
+                <p style={{ marginBottom: '8px' }}>{assignment.description}</p>
                 <p style={{ fontSize: '0.8rem', color: 'var(--text-3)', marginTop: '8px' }}>
-                  📅 Due: {formatDate(assignment.dueDate)} &nbsp;·&nbsp; 📚 {assignment.subject}
+                  📅 Due: {fmtDeadline(assignment.dueDate)}
                 </p>
               </div>
-
-              <p style={{ fontSize: '0.9rem', color: 'var(--text-2)', marginBottom: '16px', lineHeight: '1.7' }}>
-                Have you already uploaded your work to Google Drive using the provided submission link?
+              {isGroup && myGroup && (
+                <div style={{ marginBottom: '14px', background: 'var(--gold-dim)', border: '1px solid rgba(245,200,66,0.2)', borderRadius: 'var(--radius-sm)', padding: '12px 14px', fontSize: '0.85rem', color: 'var(--gold)' }}>
+                  👑 Submitting as <strong>{myGroup.name}</strong> leader — this will mark all {memberCount} member{memberCount !== 1 ? 's' : ''} as submitted.
+                </div>
+              )}
+              <p style={{ fontSize: '0.9rem', color: 'var(--text-2)', marginBottom: '14px', lineHeight: 1.7 }}>
+                Have you already uploaded your work using the Drive link below?
               </p>
-
               {assignment.driveLink && (
-                <a
-                  href={assignment.driveLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-teal"
-                  style={{ marginBottom: '16px', display: 'inline-flex' }}
-                >
+                <a href={assignment.driveLink} target="_blank" rel="noopener noreferrer" className="btn btn-teal" style={{ display: 'inline-flex', marginBottom: '4px' }}>
                   🔗 Open Drive Link
                 </a>
               )}
             </div>
-
             <div className="modal-foot">
               <button className="btn btn-secondary" onClick={onClose}>Not yet</button>
-              <button className="btn btn-primary" onClick={handleFirstConfirm}>
-                ✓ Yes, I have submitted
-              </button>
+              <button className="btn btn-primary" onClick={() => setStep(2)}>✓ Yes, I have submitted</button>
             </div>
           </>
         )}
 
-        {/* Step 2 */}
         {step === 2 && (
           <>
             <div className="modal-head">
               <div>
                 <div className="modal-head-icon warn">⚠️</div>
                 <h2>Final Confirmation</h2>
-                <p>This action cannot be undone. Please make sure.</p>
+                <p>This will be timestamped and cannot be undone.</p>
               </div>
               <button className="modal-close" onClick={onClose}>✕</button>
             </div>
-
             <div className="modal-body">
-              {/* Steps indicator */}
               <div className="modal-steps">
-                <div className="step-dot done" />
-                <div className="step-dot active" />
+                <div className="step-dot done" /><div className="step-dot active" />
               </div>
-
               <div className="modal-warn-text">
                 <span>⚠</span>
                 <span>
-                  Once confirmed, your submission status will be marked as <strong>Submitted</strong> and
-                  will be visible to your professor. You cannot undo this.
+                  Confirming will timestamp your acknowledgment at <strong>right now</strong>.
+                  {isGroup && myGroup && ` All ${memberCount} members of "${myGroup.name}" will be marked submitted.`}
                 </span>
               </div>
-
               <div className="modal-info-box">
-                <h4>You are submitting:</h4>
-                <p style={{ marginTop: '4px', fontWeight: 600, color: 'var(--text-1)' }}>{assignment.title}</p>
+                <h4>Submitting:</h4>
+                <p style={{ fontWeight: 600, color: 'var(--text-1)', marginTop: '4px' }}>{assignment.title}</p>
+                {isGroup && myGroup && (
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-3)', marginTop: '4px' }}>Group: {myGroup.name} ({memberCount} members)</p>
+                )}
               </div>
             </div>
-
             <div className="modal-foot">
               <button className="btn btn-secondary" onClick={() => setStep(1)}>← Go back</button>
-              <button className="btn btn-primary" onClick={handleFinalConfirm}>
-                ✓ Confirm Submission
-              </button>
+              <button className="btn btn-primary" onClick={() => { onConfirm(); onClose(); }}>✓ Confirm Submission</button>
             </div>
           </>
         )}
@@ -112,8 +100,9 @@ export default function SubmitModal({ assignment, onConfirm, onClose }) {
   );
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+function fmtDeadline(d) {
+  if (!d) return '—';
+  try {
+    return new Date(d).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch { return d; }
 }
