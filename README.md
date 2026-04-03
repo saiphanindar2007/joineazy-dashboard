@@ -291,7 +291,7 @@ vercel
 
 ## 👨‍💻 Author
 
-Developed as part of the **Joineazy Frontend Intern – Round 2** submission.
+Developed as part of the **Joineazy Frontend Intern.
 
 ---
 
